@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: http: data: blob:;">
+  <title>Wallet Health Registry | Security Operations Console</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CDNs -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+  <script src="./config.js"></script>
+  <script src="./app.js" defer></script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Top Cyber Header Navigation -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M12 8v4m0 4h.01"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>WALLET HEALTH <span>REGISTRY</span></h1>
+          <span class="sub-badge">SEPOLIA TESTNET • CRYPTOGRAPHIC VERIFICATION</span>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <div class="network-badge" id="network-status">
+          <span class="status-dot disconnected"></span>
+          <span id="network-name">Sepolia (11155111)</span>
+        </div>
+        <button id="connect-btn" class="cyber-btn" onclick="window.connectWallet()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/>
+            <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/>
+            <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/>
+          </svg>
+          <span id="wallet-btn-text">Connect Wallet</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Operational Grid -->
+    <main class="dashboard-grid">
+      
+      <!-- Left Column: Assessment & Security Metrics -->
+      <div class="col-main">
+        
+        <!-- Section 01: Run Wallet Assessment -->
+        <section class="cyber-card">
+          <div class="card-header">
+            <span class="sec-tag">SECTION 01</span>
+            <h2>Run Wallet Assessment</h2>
+          </div>
+          <div class="card-body">
+            <div class="assessment-controls">
+              <div class="input-group">
+                <label for="wallet-select">SELECT PROFILER DISPATCH OR ENTER CUSTOM ADDRESS</label>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <select id="wallet-select" class="cyber-select" style="flex: 1.2; min-width: 240px;" onchange="window.analyzeWallet()">
+                    <option value="risky" selected>Risky Profile (Score: 5) - Unlimited Approvals</option>
+                    <option value="clean">Clean Profile (Score: 85) - Low Exposure</option>
+                    <option value="risky_fixed">Risky Fixed Profile (Score: 65) - Revoked Approvals</option>
+                    <option value="sample">Sample Target Profile (Score: 42) - Medium Risk</option>
+                    <option value="resilient">Resilient Vault Profile (Score: 98) - Hardware Protected</option>
+                  </select>
+                  <input type="text" id="wallet-input" class="cyber-input" placeholder="Or custom 0x address..." style="flex: 1; min-width: 200px;">
+                </div>
+              </div>
+              <button id="analyze-btn" class="cyber-btn primary" onclick="window.analyzeWallet()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                Analyze Wallet
+              </button>
+            </div>
+            
+            <div class="target-info-bar" id="target-info-bar">
+              <span class="label">TARGET ADDRESS:</span>
+              <span class="value mono" id="active-address">0x8e5da9c82e0449c421c7a002b7606206ee445d01</span>
+              <span class="benchmark-pill">GLOBAL BENCHMARK: <strong id="benchmark-value">52</strong>/100</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Score Gauge & Overview -->
+        <section class="cyber-card score-overview-card">
+          <div class="score-container">
+            <div class="gauge-wrapper">
+              <svg class="circular-gauge" viewBox="0 0 160 160">
+                <circle class="gauge-bg" cx="80" cy="80" r="70" />
+                <circle id="gauge-progress" class="gauge-bar" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="440" />
+              </svg>
+              <div class="gauge-content">
+                <span class="score-val" id="score-value">--</span>
+                <span class="score-max">/ 100</span>
+                <span class="score-status" id="score-status-text">INITIALIZING</span>
+              </div>
+            </div>
+            
+            <div class="score-telemetry">
+              <h3>HEALTH SCORE ANALYSIS</h3>
+              <p id="score-description">Execute an assessment scan to fetch cryptographic score metrics and factor telemetry for target wallet.</p>
+              
+              <div class="telemetry-grid">
+                <div class="t-box">
+                  <span class="t-label">SECURITY RATING</span>
+                  <span class="t-val" id="telemetry-rating">UNKNOWN</span>
+                </div>
+                <div class="t-box">
+                  <span class="t-label">ANCHOR STATUS</span>
+                  <span class="t-val" id="telemetry-anchor">NOT STORED</span>
+                </div>
+                <div class="t-box">
+                  <span class="t-label">RECOMMENDED GAIN</span>
+                  <span class="t-val positive" id="telemetry-gain">+0 PTS</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 02: Score Evidence -->
+        <section class="cyber-card">
+          <div class="card-header">
+            <span class="sec-tag">SECTION 02</span>
+            <h2>Score Evidence Breakdown</h2>
+          </div>
+          <div class="card-body">
+            <div class="factor-list" id="factor-list">
+              <!-- Dynamically populated factor rows -->
+              <div class="loading-placeholder">Select a wallet profile and click "Analyze Wallet"...</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 03: Recommended Actions -->
+        <section class="cyber-card">
+          <div class="card-header">
+            <span class="sec-tag">SECTION 03</span>
+            <h2>Recommended Security Actions</h2>
+          </div>
+          <div class="card-body">
+            <div class="recommendations-container" id="recommendations">
+              <!-- Dynamically populated recommendations -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 04: Report Integrity -->
+        <section class="cyber-card">
+          <div class="card-header">
+            <span class="sec-tag">SECTION 04</span>
+            <h2>Report Cryptographic Integrity</h2>
+          </div>
+          <div class="card-body">
+            <div class="integrity-box">
+              <label for="canonical-report">CANONICAL REPORT PAYLOAD (JSON)</label>
+              <textarea id="canonical-report" class="cyber-textarea mono" rows="3" spellcheck="false" placeholder="Canonical report JSON string..."></textarea>
+              
+              <div class="hash-row">
+                <span class="hash-label">REPORT SHA-256 HASH:</span>
+                <span id="report-hash" class="hash-value mono">0x----------------------------------------------------------------</span>
+              </div>
+              
+              <div class="action-btn-row">
+                <button id="verify-report" class="cyber-btn outline" onclick="window.verifyIntegrity()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Check Integrity
+                </button>
+                
+                <button id="tamper-report" class="cyber-btn danger" onclick="window.tamperReport()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                  Test Tamper Payload
+                </button>
+              </div>
+              
+              <div id="integrity-status" class="status-banner info hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 05: On-Chain Registry -->
+        <section class="cyber-card">
+          <div class="card-header">
+            <span class="sec-tag">SECTION 05</span>
+            <h2>On-Chain Sepolia Registry</h2>
+          </div>
+          <div class="card-body">
+            <div class="contract-card">
+              <div class="contract-meta">
+                <div class="meta-item">
+                  <span class="meta-title">SMART CONTRACT</span>
+                  <a id="contract-link" href="https://sepolia.etherscan.io/address/0xf8e81D47203A594245E36C48e151709F0C19fBe8" target="_blank" class="mono link">
+                    0xf8e81D47203A594245E36C48e151709F0C19fBe8
+                  </a>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-title">METHOD TARGET</span>
+                  <span class="mono">store(address, uint8, bytes32)</span>
+                </div>
+              </div>
+              
+              <div class="onchain-actions">
+                <button id="save-chain" class="cyber-btn glow" onclick="window.saveOnChain()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                  </svg>
+                  Save report hash on-chain
+                </button>
+              </div>
+              
+              <div id="contract-status" class="contract-status-box mono">
+                Contract Status: Ready for Sepolia anchoring broadcast.
+              </div>
+            </div>
+          </div>
+        </section>
+        
+      </div>
+
+      <!-- Right Column: AI Security Assistant Sidebar -->
+      <div class="col-sidebar">
+        <aside class="cyber-card ai-assistant-card">
+          <div class="card-header sidebar-header">
+            <div class="ai-brand">
+              <div class="ai-pulse-dot"></div>
+              <h2>AI Security Assistant</h2>
+            </div>
+            <span class="ai-tag">REAL-TIME CONTEXT</span>
+          </div>
+          
+          <div class="card-body sidebar-body">
+            <p class="ai-intro">
+              Inspect active wallet telemetry, analyze vulnerability factors, and ask interactive remediation questions.
+            </p>
+            
+            <!-- Quick Chips -->
+            <div class="prompt-chips">
+              <button class="chip" onclick="window.askAI('Explain my risk score')">
+                ⚡ Explain my risk score
+              </button>
+              <button class="chip" onclick="window.askAI('How do I fix these vulnerabilities?')">
+                🛡️ How do I fix vulnerabilities?
+              </button>
+              <button class="chip" onclick="window.askAI('What is on-chain hash anchoring?')">
+                🔗 What is hash anchoring?
+              </button>
+              <button class="chip" onclick="window.askAI('Compare with benchmark score')">
+                📊 Compare with benchmark
+              </button>
+            </div>
+            
+            <!-- Chat Log Window -->
+            <div id="chat-log" class="chat-log">
+              <div class="chat-msg ai">
+                <div class="msg-author">SECURITY ASSISTANT AI</div>
+                <div class="msg-content">
+                  Hello! I am monitoring active wallet health report telemetry. Select a wallet profile above or ask me any questions about your score and recommendations.
+                </div>
+              </div>
+            </div>
+            
+            <!-- Chat Input Form -->
+            <form id="chat-form" class="chat-input-form" onsubmit="window.handleChatSubmit(event)">
+              <input type="text" id="chat-input" class="cyber-input" placeholder="Ask security assistant..." autocomplete="off">
+              <button type="submit" class="cyber-btn primary icon-only" title="Send message">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="22" y1="2" x2="11" y2="13"/>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+              </button>
+            </form>
+          </div>
+        </aside>
+      </div>
+
+    </main>
+
+    <!-- Cyber Footer -->
+    <footer class="footer">
+      <span>WALLET HEALTH REGISTRY • CYBER SECURITY OPERATIONS CONSOLE</span>
+      <span>SEPOLIA CONTRACT: 0xf8e8...fBe8</span>
+    </footer>
+
+  </div>
+</body>
+</html>
